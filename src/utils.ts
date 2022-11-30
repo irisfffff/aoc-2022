@@ -6,7 +6,8 @@ export const readByLine = (filename: string) => {
 
 export const sumArray = (arr: number[]) => arr.reduce((pre, cur) => pre + cur);
 
-export const multiplyArray = (arr: number[]) => arr.reduce((pre, cur) => pre * cur);
+export const multiplyArray = (arr: number[]) =>
+  arr.reduce((pre, cur) => pre * cur);
 
 // Quick Sort
 const partition = (arr: Array<any>, start: number, end: number) => {
@@ -27,7 +28,11 @@ const partition = (arr: Array<any>, start: number, end: number) => {
   return pivotIndex;
 };
 
-export const quickSortRecursive = (arr: Array<any>, start: number, end: number) => {
+export const quickSortRecursive = (
+  arr: Array<any>,
+  start: number,
+  end: number
+) => {
   // Base case or terminating case
   if (start >= end) {
     return;
