@@ -71,7 +71,7 @@ export const solution = (data: string[]) => {
 };
 
 // Outputs answer, do not change
-const data = readByLine("./data");
+const data = readByLine("./day02/data");
 // Do not run if empty file or test mock readFileSync
 if (data[0]) {
   solution(data);

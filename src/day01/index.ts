@@ -28,5 +28,5 @@ export const solution = (data: string[]) => {
 };
 
 // Outputs answer, do not change
-const data = readByLine("./data");
+const data = readByLine("./day01/data");
 solution(data);

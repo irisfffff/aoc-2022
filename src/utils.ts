@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
+import path from "path";
 
 export const readByLine = (filename: string) => {
-  return readFileSync(filename).toString().split(/\n/);
+  return readFileSync(path.resolve(__dirname, filename)).toString().split(/\n/);
 };
 
 export const sumArray = (arr: number[]) => arr.reduce((pre, cur) => pre + cur);
