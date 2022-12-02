@@ -7,7 +7,7 @@ jest.mock("fs", () => ({
   }),
 }));
 
-describe("Day1", () => {
+describe("Day 1", () => {
   it("Example 1", () => {
     const data = [
       '1000', '2000',  '3000',
