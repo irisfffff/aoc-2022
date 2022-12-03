@@ -10,6 +10,12 @@ export const sumArray = (arr: number[]) => arr.reduce((pre, cur) => pre + cur);
 export const multiplyArray = (arr: number[]) =>
   arr.reduce((pre, cur) => pre * cur);
 
+export const sortAndReduceString = (str: string, amount: number) => {
+  const sortedStr = str.split('').sort().join('')
+  const re = new RegExp("(.)(?=\\1{" + amount + "})","g");
+  return sortedStr.replace(re, "");
+}
+
 // Quick Sort
 const partition = (arr: Array<any>, start: number, end: number) => {
   // Taking the last element as the pivot
