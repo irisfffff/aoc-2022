@@ -1,7 +1,6 @@
 import { readByLine } from "../utils";
 
 const parseData = (data: string[]) => {
-  // ** To be changed *
   return data.join("");
 };
 
