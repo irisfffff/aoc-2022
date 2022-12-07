@@ -1,0 +1,28 @@
+import { solution } from ".";
+import { readFileSync } from "fs";
+
+jest.mock("fs", () => ({
+  readFileSync: jest.fn((file_name) => {
+    return [];
+  }),
+}));
+
+describe("Day 7", () => {
+  it("Example 1", () => {
+    const data = [
+      '$ cd /',        '$ ls',
+      'dir a',         '14848514 b.txt',
+      '8504156 c.dat', 'dir d',
+      '$ cd a',        '$ ls',
+      'dir e',         '29116 f',
+      '2557 g',        '62596 h.lst',
+      '$ cd e',        '$ ls',
+      '584 i',         '$ cd ..',
+      '$ cd ..',       '$ cd d',
+      '$ ls',          '4060174 j',
+      '8033020 d.log', '5626152 d.ext',
+      '7214296 k'
+    ];
+    expect(solution(data)).toEqual(expect.arrayContaining([95437, 24933642]));
+  });
+});

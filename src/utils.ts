@@ -16,7 +16,7 @@ export const sortAndReduceString = (str: string, amount: number) => {
   return sortedStr.replace(re, "");
 }
 
-// Quick Sort
+// Quick Sort ascending
 const partition = (arr: Array<any>, start: number, end: number) => {
   // Taking the last element as the pivot
   const pivotValue = arr[end];
