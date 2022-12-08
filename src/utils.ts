@@ -52,3 +52,21 @@ export const quickSortRecursive = (
   quickSortRecursive(arr, start, index - 1);
   quickSortRecursive(arr, index + 1, end);
 };
+
+// Rotate 90 degree counterclockwise
+export const rotateN90 = (a: any[][]) => {
+  var temp = new Array(a[0].length); // number of columns
+  var i = 0;
+
+  for (i = 0; i < temp.length; i++) {
+    temp[i] = [];
+  }
+
+  for (i = 0; i < a.length; i++) {
+    for (let j = 0; j < a[0].length; j++) {
+      temp[j][i] = a[i][a[i].length - 1 - j];
+    }
+  }
+
+  return temp;
+}
