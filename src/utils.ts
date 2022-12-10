@@ -16,6 +16,10 @@ export const sortAndReduceString = (str: string, amount: number) => {
   return sortedStr.replace(re, "");
 }
 
+export const get2DArray = (a: number, b: number, fill?: string | number) => {
+  return new Array(a).fill(0).map(i => new Array(b).fill(fill))
+}
+
 // Quick Sort ascending
 const partition = (arr: Array<any>, start: number, end: number) => {
   // Taking the last element as the pivot
