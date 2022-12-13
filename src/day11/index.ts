@@ -1,100 +1,29 @@
 import { readByLine, quickSortRecursive, sumArray } from "../utils";
 
-interface Monkey {
-  items: number[];
-  isMultiply: boolean;
-  inspectAmount: string; // number string or 'old'
-  test: {
-    division: number;
-    ifTrue: number;
-    ifFalse: number;
-  };
-  totalTimes: number;
-}
-
 type Methods = "+" | "*" | "^";
 interface Item {
-  initial: number;
-  ops: { method: Methods; amount: number }[];
+  value: number;
+  remainders?: number[];
 }
-interface Monkey2 {
+interface Monkey {
   items: Array<Item>;
   method: Methods;
   inspectAmount: number;
-  test: {
-    division: number;
-    ifTrue: number;
-    ifFalse: number;
-  };
+  division: number;
+  ifTrue: number;
+  ifFalse: number;
   totalTimes: number;
 }
 
 const parseData = (data: string[]) => {
   const monkeys: Monkey[] = [];
-  for (let i = 0; i < data.length; i++) {
-    // Monkey x:
-    i++;
-    // Starting items:
-    const items = [...data[i].matchAll(/\d+/g)].map((i) => parseInt(i[0]));
-    i++;
-    // Operation
-    let isMultiply = false,
-      inspectAmount = "1";
-    const reg = /  Operation: new = old (.) (\d+|old)/;
-    const match = data[i].match(reg);
-    if (match) {
-      if (match[1] === "*") {
-        isMultiply = true;
-      }
-      inspectAmount = match[2];
-    }
-    i++;
-    // Test
-    let division = 1;
-    const match2 = data[i].match(/\d+/);
-    if (match2) {
-      division = parseInt(match2[0]);
-    }
-    i++;
-    // If truelet division = 1
-    let ifTrue = 0;
-    const match3 = data[i].match(/\d+/);
-    if (match3) {
-      ifTrue = parseInt(match3[0]);
-    }
-    i++;
-    // If false
-    let ifFalse = 0;
-    const match4 = data[i].match(/\d+/);
-    if (match4) {
-      ifFalse = parseInt(match4[0]);
-    }
-    i++;
-
-    monkeys.push({
-      items,
-      isMultiply,
-      inspectAmount,
-      test: {
-        division,
-        ifTrue,
-        ifFalse,
-      },
-      totalTimes: 0,
-    });
-  }
-  return monkeys;
-};
-
-const parseData2 = (data: string[]) => {
-  const monkeys: Monkey2[] = [];
+  const divisions: number[] = [];
   for (let i = 0; i < data.length; i++) {
     // Monkey x:
     i++;
     // Starting items:
     const items = [...data[i].matchAll(/\d+/g)].map((i) => ({
-      initial: parseInt(i[0]),
-      ops: [],
+      value: parseInt(i[0]),
     }));
     i++;
     // Operation
@@ -109,7 +38,7 @@ const parseData2 = (data: string[]) => {
       if (match[2] !== "old") {
         inspectAmount = parseInt(match[2]);
       } else {
-        method = '^'
+        method = "^";
       }
     }
     i++;
@@ -118,6 +47,7 @@ const parseData2 = (data: string[]) => {
     const match2 = data[i].match(/\d+/);
     if (match2) {
       division = parseInt(match2[0]);
+      divisions.push(division);
     }
     i++;
     // If truelet division = 1
@@ -139,72 +69,64 @@ const parseData2 = (data: string[]) => {
       items,
       method,
       inspectAmount,
-      test: {
-        division,
-        ifTrue,
-        ifFalse,
-      },
+      division,
+      ifTrue,
+      ifFalse,
       totalTimes: 0,
     });
   }
-  return monkeys;
+  return { monkeys, divisions };
 };
 
-const processRound1 = (monkeys: Monkey[]) => {
-  for (const monkey of monkeys) {
-    while (monkey.items.length) {
-      let item = monkey.items.shift() ?? 1;
-      let amount = 1;
-      if (monkey.inspectAmount === "old") {
-        amount = item;
-      } else {
-        amount = parseInt(monkey.inspectAmount);
-      }
-      if (monkey.isMultiply) {
-        item *= amount;
-      } else {
-        item += amount;
-      }
-      item = Math.floor(item / 3);
-      if (item % monkey.test.division) {
-        monkeys[monkey.test.ifFalse].items.push(item);
-      } else {
-        monkeys[monkey.test.ifTrue].items.push(item);
-      }
-      monkey.totalTimes++;
-    }
+const doOperation = (value: number, method: Methods, amount: number) => {
+  if (method === "*") {
+    return value * amount;
+  } else if (method === "^") {
+    return value * value;
+  } else if (method === "+") {
+    return value + amount;
   }
+  return 0;
 };
 
-const runTest = (item: Item, division: number): boolean => {
-  let val = item.initial
-  
-  for(const op of item.ops) {
-    if(op.method === '*') {
-      val = (val * op.amount) % division
-    } else if(op.method === '^') {
-      val = (val * val) % division
-    } else if(op.method === '+') {
-      val = (val + op.amount) % division
-    }
-  }
-  if(val % division) {
-    return false
-  }
-  return true
-}
-
-const processRound2 = (monkeys: Monkey2[]) => {
-  for (const monkey of monkeys) {
+const processRound = (
+  monkeys: Monkey[],
+  divisions: number[],
+  isTask2: boolean = false
+) => {
+  for (let i = 0; i < monkeys.length; i++) {
+    const monkey = monkeys[i];
     while (monkey.items.length) {
       let item = monkey.items.shift();
       if (!item) break;
-      item.ops.push({ method: monkey.method, amount: monkey.inspectAmount });
-      const res = runTest(item, monkey.test.division)
-      if(res) {
-        monkeys[monkey.test.ifTrue].items.push(item);
+      let res = false;
+      if (isTask2) {
+        if (!item.remainders) {
+          item.remainders = new Array(divisions.length).fill(item.value);
+        }
+        item.remainders = item.remainders.map((remainder, idx) => {
+          let value = doOperation(
+            remainder,
+            monkey.method,
+            monkey.inspectAmount
+          );
+          value = value % divisions[idx];
+          return value;
+        });
+        res = !item.remainders[i];
       } else {
-        monkeys[monkey.test.ifFalse].items.push(item);
+        item.value = doOperation(
+          item.value,
+          monkey.method,
+          monkey.inspectAmount
+        );
+        item.value = Math.floor(item.value / 3);
+        res = !(item.value % monkey.division);
+      }
+      if (res) {
+        monkeys[monkey.ifTrue].items.push(item);
+      } else {
+        monkeys[monkey.ifFalse].items.push(item);
       }
       monkey.totalTimes++;
     }
@@ -212,11 +134,11 @@ const processRound2 = (monkeys: Monkey2[]) => {
 };
 
 export const solution = (data: string[]) => {
-  const monkeys = parseData(data);
+  const { monkeys, divisions } = parseData(data);
 
   let rounds = 20;
   while (rounds) {
-    processRound1(monkeys);
+    processRound(monkeys, divisions);
     rounds--;
   }
 
@@ -226,11 +148,10 @@ export const solution = (data: string[]) => {
     totalTimes1[totalTimes1.length - 1] * totalTimes1[totalTimes1.length - 2];
   console.log(">>> Part 1:", res1);
 
-  const monkeys2 = parseData2(data);
-
+  const { monkeys: monkeys2 } = parseData(data);
   rounds = 10000;
   while (rounds) {
-    processRound2(monkeys2);
+    processRound(monkeys2, divisions, true);
     rounds--;
   }
 
